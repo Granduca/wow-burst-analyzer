@@ -1,0 +1,41 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ "main" ] # Запускать workflow при пуше в ветку main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # Запускаем на последней Ubuntu
+
+    steps:
+    # 1. Checkout код репозитория
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # 2. Устанавливаем Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    # 3. Устанавливаем pnpm
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+
+    # 4. Устанавливаем зависимости
+    - name: Install dependencies
+      run: pnpm install
+
+    # 5. Собираем приложение
+    - name: Build
+      run: pnpm run build
+
+    # 6. Деплоим результат сборки на GitHub Pages
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist # Папка Vite сборки
