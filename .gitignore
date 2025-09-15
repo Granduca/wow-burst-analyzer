@@ -13,7 +13,6 @@ node_modules
 .pnp.js
 
 # Production builds
-dist
 build
 
 # Environment variables

@@ -1,4 +1,4 @@
-import { BurstConfig, BurstData, BurstType, Burst, StrategyResult } from '../types';
+import { BurstConfig, BurstData, BurstType, StrategyResult } from '../types';
 
 /**
  * Создает пустую структуру данных для бурстов
