@@ -2,42 +2,48 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ] # Запускать workflow при пуше в ветку main
+
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
-    # ★★★ КРИТИЧЕСКИ ВАЖНО: Даём права на запись ★★★
-    permissions:
-      contents: write
+    runs-on: ubuntu-latest # Запускаем на последней Ubuntu
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    # 1. Checkout код репозитория
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
+    # 2. Устанавливаем Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'pnpm'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+    # 3. Устанавливаем pnpm
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
 
-      - name: Install dependencies
-        run: pnpm install
+    # 4. Устанавливаем зависимости
+    - name: Install dependencies
+      run: pnpm install
 
-      - name: Build
-        run: pnpm run build
+    # 5. Собираем приложение
+    - name: Build
+      run: pnpm run build
 
-      # ★★★ Исправление для роутинга (SPA) ★★★
-      - name: Fix SPA routing
-        run: cp ./dist/index.html ./dist/404.html
+    # 6. Настраиваем SPA роутинг для GitHub Pages
+    - name: Setup SPA routing
+      run: cp ./dist/index.html ./dist/404.html
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+    # 7. Деплоим результат сборки на GitHub Pages
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist # Папка Vite сборки
